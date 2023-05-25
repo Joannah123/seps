@@ -2,32 +2,34 @@
 <?php
 include "connect.php";
 session_start();
-$fn=$_SESSION['fname'];
-$ln=$_SESSION['lname'];
-$em=$_SESSION['email'];
+$fn = $_SESSION['fname'];
+$ln = $_SESSION['lname'];
+$em = $_SESSION['email'];
 
 if (isset($_POST['submit'])) {
-	$curr_pass=$_POST['curr_pass'];
-	$new_pass=$_POST['new_pass'];
-    $conf_pass=$_POST['conf_pass'];
+    $curr_pass = $_POST['curr_pass'];
+    $new_pass = $_POST['new_pass'];
+    $conf_pass = $_POST['conf_pass'];
 
-$sql="SELECT * FROM users WHERE email='$em'";
-$run=mysqli_query($conn,$sql);
-$fetch=mysqli_fetch_array($run);
-$pass=$fetch['pass'];
-if ((password_verify($pw, $pass)) && ($conf_pass==$new_pass)) {
-    $sql = "UPDATE users SET pass='$new' WHERE pass='$conf_pass'";
-    $rn=mysqli_query($conn,$sql);
-    if ($rn) {
-        header('location:settings.php');
-        $_SESSION['msg']= "Password is Succesfully Changed";
-        $_SESSION['alert']= "alert alert-success";
+    $sql = "SELECT * FROM users WHERE email='$em'";
+    $run = mysqli_query($conn, $sql);
+    $fetch = mysqli_fetch_array($run);
+    $pass = $fetch['pass'];
+    if (($pass == $curr_pass) && ($conf_pass == $new_pass)) {
+        $sql = "UPDATE users SET pass='$new_pass' WHERE email='$em'";
+        $rn = mysqli_query($conn, $sql);
+        if ($rn) {
+            header('location:settings.php');
+            $_SESSION['msg'] = "Password is Succesfully Changed";
+            echo ($_SESSION['msg']) . "<br />";
+            // $_SESSION['alert'] = "alert alert-success";
+        }
+    } else {
+        header('location:dashboard.php');
+        $_SESSION['msg'] = "Entered Passwords do not match";
+        echo ($_SESSION['msg']) . "<br />";
+        // $_SESSION['alert'] = "alert alert-warning";
     }
-}else {
-    header('location:settings.php');
-    $_SESSION['msg']= "Entered Passwords do not match";
-    $_SESSION['alert']= "alert alert-warning";
-}
 }
 ?>
 <html lang="en">
@@ -44,9 +46,7 @@ if ((password_verify($pw, $pass)) && ($conf_pass==$new_pass)) {
 
     <!-- Custom fonts for this template -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -67,58 +67,58 @@ if ((password_verify($pw, $pass)) && ($conf_pass==$new_pass)) {
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.php">
                 <div class="sidebar-brand-icon rotate-n-15">
-                <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:50px;">
+                    <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:50px;">
                 </div>
-                <div class="sidebar-brand-text mx-3">Customer</sup></div>
+                <div class="sidebar-brand-text mx-3">Customer</div>
             </a>
 
-                      <!-- Divider -->
-                      <hr class="sidebar-divider my-0">
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
 
-                      <!-- Nav Item - Dashboard -->
-                      <li class="nav-item active">
-                          <a class="nav-link" href="dashboard.php">
-                              <i class="fas fa-fw fa-tachometer-alt"></i>
-                              <span>Dashboard</span></a>
-                      </li>
-          
-                      <!-- Divider -->
-          
-                      <hr class="sidebar-divider">
-                      <!-- Nav Item - Settings -->
-                      <li class="nav-item active">
-                          <a class="nav-link" href="#.html">
-                              <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                              <span>Settings</span></a>
-                      </li>
-                      <!-- Divider -->
-                      <hr class="sidebar-divider">
-          
-                      <!-- Nav Item - Contact -->
-                      <li class="nav-item active">
-                          <a class="nav-link" href="#.html">
-                              <i class="fa fa-address-card"></i>
-                              <span>Contact Us</span></a>
-                      </li>
-          
-                      <!-- Divider -->
-                      <hr class="sidebar-divider">
-          
-                      <!-- Nav Item - Share -->
-                      <li class="nav-item active">
-                          <a class="nav-link" href="#.html">
-                              <i class="fa fa-share-alt"></i>
-                              <span>Share</span></a>
-                      </li>
-          
-                      <!-- Divider -->
-                      <hr class="sidebar-divider">
-                      <!-- Nav Item - Log Out -->
-                      <li class="nav-item">
-                          <a class="nav-link" href="logout.php">
-                              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                              <span>Log out</span></a>
-                      </li>
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="dashboard.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
+
+            <!-- Divider -->
+
+            <hr class="sidebar-divider">
+            <!-- Nav Item - Settings -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#.html">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <span>Settings</span></a>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Contact -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#.html">
+                    <i class="fa fa-address-card"></i>
+                    <span>Contact Us</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Share -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#.html">
+                    <i class="fa fa-share-alt"></i>
+                    <span>Share</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+            <!-- Nav Item - Log Out -->
+            <li class="nav-item">
+                <a class="nav-link" href="logout.php">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <span>Log out</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -148,62 +148,30 @@ if ((password_verify($pw, $pass)) && ($conf_pass==$new_pass)) {
                     </form>
 
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <div class="topbar-divider d-none d-sm-block"></div>
 
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo "$fn $ln" ?></span>
-                                <img class="img-profile rounded-circle"
-                                    src="img/undraw_profile.svg">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="logout.php" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
 
                 </nav>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid mb-5" >
+                <div class="container-fluid mb-5">
 
-                <div class="container">
+                    <div class="container">
                         <div class="row justify-content-center">
                             <div class="col-lg-5">
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Change Password</h3></div>
+                                    <div class="card-header">
+                                        <h3 class="text-center font-weight-light my-4">Change Password</h3>
+                                    </div>
                                     <div class="card-body">
                                         <form method="post" action="settings.php">
                                             <div class="form-floating mb-3">
                                                 <label for="curr_pass"></label>
                                                 <input class="form-control" id="inputEmail" name="curr_pass" type="password" placeholder="Enter Current Password" required="required" />
-                        
+
                                                 <label for="new_pass"></label>
                                                 <input class="form-control" id="inputEmail" name="new_pass" type="password" placeholder="Enter New Password" required="required" />
+
                                                 <label for="conf_pass"></label>
                                                 <input class="form-control" id="inputEmail" name="conf_pass" type="password" placeholder="Enter Confirm Password" required="required" />
                                             </div>
@@ -246,8 +214,7 @@ if ((password_verify($pw, $pass)) && ($conf_pass==$new_pass)) {
     </a>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
