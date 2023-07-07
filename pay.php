@@ -27,8 +27,8 @@
  $fetch=mysqli_fetch_array($run);
  $balance=$fetch['balance'];
  $meter=$fetch['meter_no'];
- $mobile ='255620244063';
- $sms = 'RUcode1';
+ $mobile ='255744910281';
+ $sms = 'RUcode2';
  if ($balance>=$prc) {
      $new=$balance-$prc;
      $sql = "UPDATE meter_details SET balance='$new' WHERE meter_no='$mn'";
@@ -43,7 +43,7 @@
             
          
      }else {
-        echo "Payment failled. Please contact your service provider";
+        echo "Payment failed. Please contact your service provider";
      }
  }else {
     header('location:failure.php');
@@ -80,7 +80,7 @@
 <body id="page-top">
 
     <!-- Page Wrapper -->
-    <div id="wrapper">
+    <div id="wrapper" class="d-flex">
 
         <!-- Sidebar -->
         <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #0C0634">

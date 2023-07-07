@@ -1,15 +1,15 @@
 <?php
 
 function sendSms($mobile, $sms){
-    $api_key='5e2ea19d6dcf81b6';
-    $secret_key = 'ODI2ZWVhOGMwZjY3MDM0M2E3YzRhMGM3ZmZjNDk1YmQ2MzFiZTc2MDdjY2E0MDRlOGQwNWNkMDgzN2E0YmY4Yg==';
+    $api_key='6b5622887ea13f6e';
+    $secret_key = 'ZTVmOGM2NDQxNWUyMDFiMzlkMDU3NDllYTg0ZjA0NTkwYWQzOGJhNDM4MjYyZjgzZmU5NDhiMTQ3YmU0NWYzOA==';
 $postData = array(
     'source_addr' => 'INFO',
     'encoding'=>0,
     'schedule_time' => '',
-    'message' => ''.$sms.'',
+    'message' => $sms,
     // 'recipients' => [array('recipient_id' => '1','dest_addr'=>'255700000001'),array('recipient_id' => '2','dest_addr'=>'255700000011')]
-    'recipients' => [array('recipient_id' => '1','dest_addr'=>''.$mobile.'')]
+    'recipients' => [array('recipient_id' => '1','dest_addr'=> $mobile)]
 
 );
 

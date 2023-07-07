@@ -1,254 +1,264 @@
-<!DOCTYPE html>
 <?php
-include "connect.php";
 session_start();
-$fn = $_SESSION['fname'];
-$ln = $_SESSION['lname'];
-$em = $_SESSION['email'];
+include "connect.php";
 
-if (isset($_POST['submit'])) {
-    $curr_pass = $_POST['curr_pass'];
-    $new_pass = $_POST['new_pass'];
-    $conf_pass = $_POST['conf_pass'];
+$errors = array();
+if (isset($_POST['oldpass']) && isset($_POST['newpass']) && isset($_POST['confpass'])) {
 
-    $sql = "SELECT * FROM users WHERE email='$em'";
-    $run = mysqli_query($conn, $sql);
-    $fetch = mysqli_fetch_array($run);
-    $pass = $fetch['pass'];
-    if (($pass == $curr_pass) && ($conf_pass == $new_pass)) {
-        $sql = "UPDATE users SET pass='$new_pass' WHERE email='$em'";
-        $rn = mysqli_query($conn, $sql);
-        if ($rn) {
-            header('location:settings.php');
-            $_SESSION['msg'] = "Password is Succesfully Changed";
-            echo ($_SESSION['msg']) . "<br />";
-            // $_SESSION['alert'] = "alert alert-success";
+    function validate($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+    $oldpass = $_POST['oldpass'];
+    $newpass = $_POST['newpass'];
+    $confpass = $_POST['confpass'];
+
+    //check if empty
+    if (empty($oldpass)) {
+        $errors['oldpass'] = 'Enter your old password';
+    }
+    if (empty($newpass)) {
+        $errors['newpass'] = 'Enter your new password';
+    }
+    if(strlen($newpass) < 8){
+        $errors['newpass'] = 'Password length should be atleast 8 characters';
+    }
+    if (!preg_match('/[A-Z]/', $newpass)){
+        $errors['newpass'] = 'Password must contain at least one uppercase letter';
+    }
+    if (!preg_match('/[a-z]/', $newpass)){
+        $errors['newpass'] = 'Password must contain at least one lowercase letter';
+    }
+    if (!preg_match('/\d/', $newpass)){
+        $errors['newpass'] = 'Password must contain at least one digit';
+    }
+    if (empty($confpass)) {
+        $errors['confpass'] = 'Confirm your password';
+    }
+    if ($newpass !== $confpass) {
+        $errors['match'] = 'Entered passwords do not match';
+    }
+   
+    else {
+        $oldpass = password_hash($_POST['oldpass'], PASSWORD_DEFAULT);
+        $newpass = password_hash($_POST['newpass'], PASSWORD_DEFAULT);
+        $email1 = $_SESSION['email'];
+        
+
+        $sql = "SELECT * FROM users WHERE  email='$email1'";
+        $result = mysqli_query($conn, $sql);
+        $run= mysqli_fetch_array($result);
+        if ($run){
+        $query1= "UPDATE users SET pass = '$newpass' WHERE email= '$email1'";
+         $run= mysqli_query($conn, $query1);
+         exit("Updated successfully");
+        } 
+        else {
+            echo "Oooops couldn't update your password!";
         }
-    } else {
-        header('location:dashboard.php');
-        $_SESSION['msg'] = "Entered Passwords do not match";
-        echo ($_SESSION['msg']) . "<br />";
-        // $_SESSION['alert'] = "alert alert-warning";
     }
 }
+
 ?>
-<html lang="en">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>settings</title>
-
-    <!-- Custom fonts for this template -->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-
-</head>
-
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #0C0634">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.php">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:50px;">
-                </div>
-                <div class="sidebar-brand-text mx-3">Customer</div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="dashboard.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-
-            <hr class="sidebar-divider">
-            <!-- Nav Item - Settings -->
-            <li class="nav-item active">
-                <a class="nav-link" href="#.html">
-                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                    <span>Settings</span></a>
-            </li>
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Nav Item - Contact -->
-            <li class="nav-item active">
-                <a class="nav-link" href="#.html">
-                    <i class="fa fa-address-card"></i>
-                    <span>Contact Us</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Nav Item - Share -->
-            <li class="nav-item active">
-                <a class="nav-link" href="#.html">
-                    <i class="fa fa-share-alt"></i>
-                    <span>Share</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-            <!-- Nav Item - Log Out -->
-            <li class="nav-item">
-                <a class="nav-link" href="logout.php">
-                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                    <span>Log out</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa fa-bars"></i>
-                        </button>
-                    </form>
 
 
 
 
-                </nav>
-                <!-- End of Topbar -->
+<?php
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid mb-5">
+if (isset($_SESSION['email'])) {
 
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-5">
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header">
-                                        <h3 class="text-center font-weight-light my-4">Change Password</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <form method="post" action="settings.php">
-                                            <div class="form-floating mb-3">
-                                                <label for="curr_pass"></label>
-                                                <input class="form-control" id="inputEmail" name="curr_pass" type="password" placeholder="Enter Current Password" required="required" />
+?>
 
-                                                <label for="new_pass"></label>
-                                                <input class="form-control" id="inputEmail" name="new_pass" type="password" placeholder="Enter New Password" required="required" />
+    <!DOCTYPE html>
+    <html lang="en">
 
-                                                <label for="conf_pass"></label>
-                                                <input class="form-control" id="inputEmail" name="conf_pass" type="password" placeholder="Enter Confirm Password" required="required" />
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a class="small" href="dashboard.php">Return to Dashboard</a>
-                                                <button class="btn btn-primary" name="submit">Change Password</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/sb-admin-2.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <title>Change Password</title>
 
-                </div>
-                <!-- /.container-fluid -->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;600;700&family=Open+Sans:wght@300;400;700&family=Pacifico&family=Quicksand:wght@300;600&family=Roboto&display=swap');
 
-            </div>
-            <!-- End of Main Content -->
+            body {
+               
+                color: black;
+                justify-content: center;
+                align-items: center;
+                font-family: 'Open Sans', sans-serif;
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; ASEPS 2022</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+            }
 
+            .form {
+                width: 500px;
+                height: 600px;
+                border: 1px solid white;
+                background-color: white;
+                margin: 0 auto; 
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 2px 0px 10px 7px #d1d3e2;
+            }
+
+            .wrap {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                padding-top: 10px;
+            }
+
+            .input {
+                height: 30px;
+                border-radius: 5px;
+                margin-top: 10px;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .input-submit {
+                background-color: #23395d;
+                color: white;
+                text-align: center;
+                padding: 10px;
+            }
+            
+    .error {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+       
+    </head>
+
+    <body>
+    <div id="wrapper " class="d-flex" >
+
+<!-- Sidebar -->
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #0C0634">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center pb-3" href="dashboard.php">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:50px;">
         </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
+        <div class="sidebar-brand-text mx-3">CUSTOMER</div>
     </a>
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" href="dashboard.php">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a>
+    </li>
+
+    <!-- Divider -->
+
+    <hr class="sidebar-divider">
+    <!-- Nav Item - Settings -->
+    <li class="nav-item active">
+        <a class="nav-link" href="settings.php">
+            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+            <span>Settings</span></a>
+    </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Nav Item - Contact -->
+    <li class="nav-item active">
+        <a class="nav-link" href="contact.php">
+            <i class="fa fa-address-card"></i>
+            <span>Contact Us</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Nav Item - Share -->
+    <li class="nav-item active">
+        <a class="nav-link" href="#.html">
+            <i class="fa fa-share-alt"></i>
+            <span>Share</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+    <!-- Nav Item - Log Out -->
+    <li class="nav-item">
+        <a class="nav-link" href="logout.php">
+            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            <span>Log out</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <!-- <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div> -->
+
+</ul>
+<!-- End of Sidebar -->
+
+<div class="form mt-3">
+            <form action="settings.php" method="post">
+                <h2>CHANGE PASSWORD</h2>
+
+                <div class="wrap">
+                    <label for="oldpass">Old Password</label>
+                    <input class="input" type="password" name="oldpass" placeholder="Enter Old Password">
+                    <span class="error"><?php echo (isset($errors['oldpass'])) ? $errors['oldpass'] : ''; ?></span>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="logout.php">Logout</a>
+
+                <div class="wrap">
+                    <label for="newpass">New Password</label>
+                    <input class="input" type="password" name="newpass" placeholder="Enter New Password">
+                    <span class="error"><?php echo (isset($errors['newpass'])) ? $errors['newpass'] : ''; ?></span>
                 </div>
-            </div>
+
+                <div class="wrap">
+                    <label for="confpass">Confirm Password</label>
+                    <input class="input" type="password" name="confpass" placeholder="Enter Confirm Password">
+                    <span class="error"><?php echo (isset($errors['confpass'])) ? $errors['confpass'] : ''; ?></span>
+                </div>
+
+                <div class="wrap">
+                    <label for="oldpass">Submit</label>
+                    <input class="input-submit" type="submit" name="submit" value="submit">
+                </div>
+
+            </form>
         </div>
+                
+                 
+
+
+            
+
+
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+       
+    </body>
 
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
-
-</body>
-
-</html>
+    </html>
+<?php } else {
+    header("Location:index.php");
+    exit();
+}
+?>

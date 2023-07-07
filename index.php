@@ -18,43 +18,42 @@ if (isset($_POST['submit'])) {
         
         
         if (password_verify($pw, $pass) && $sts=='Customer' && $mn!=NULL) {
-            header('location:dashboard.php');
-             $_SESSION['fname']=$fn;
-             $_SESSION['lname']=$ln;
-             $_SESSION['meter_no']=$mn;
-            $_SESSION['email']=$email;
-            $_SESSION['email']=$email;
-            // $_SESSION['msg']= "logged in succesfully";
-            // $_SESSION['alert']= "alert alert-success";
-        }
-        elseif (password_verify($pw, $pass) && $sts=='Admin' && $mn==NULL) {
-            header('location:admin/index.php');
             $_SESSION['fname']=$fn;
             $_SESSION['lname']=$ln;
             $_SESSION['meter_no']=$mn;
-           $_SESSION['email']=$email;
-           $_SESSION['sts']=$sts;
-            // $_SESSION['msg']= "logged in succesfully";
-            // $_SESSION['alert']= "alert alert-success";
+            $_SESSION['email']=$email;
+            $_SESSION['email']=$email;
+          
+            header('location:dashboard.php');
+        }
+        elseif (password_verify($pw, $pass) && $sts=='Admin' && $mn==NULL) {
+            $_SESSION['fname']=$fn;
+            $_SESSION['lname']=$ln;
+            $_SESSION['meter_no']=$mn;
+            $_SESSION['email']=$email;
+            $_SESSION['sts']=$sts;
+            header('location:admin/index.php');
+          
         }
         elseif (password_verify($pw, $pass) && $sts=='Agent' && $mn==NULL) {
-            header('location:agent/index.php');
             $_SESSION['fname']=$fn;
             $_SESSION['lname']=$ln;
             $_SESSION['msg']= "logged in succesfully";
             $_SESSION['alert']= "alert alert-warning";
             $_SESSION['email']=$email;
+            header('location:agent/index.php');
         }elseif ($sts==NULL && $mn==NULL) { 
             $_SESSION['msg']= "You are not yet registered! Please contact your service provider";
-            $_SESSION['alert']= "alert alert-warning";
+         
         }
     }else{
         $_SESSION['msg']= "Wrong log in credentials";
-        $_SESSION['alert']= "alert alert-warning";
+      
     }
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -98,9 +97,9 @@ if (isset($_POST['submit'])) {
                             <div class="col-lg-6 bg-gradient-white">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Log in here!</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Log in here</h1>
                                     </div>
-                                    <form class="user" action="index.php" method="post">
+                                    <form class="user" method="post">
                                         <div class="form-group">
                                             <input name="email" type="email" class="form-control form-control-user"
                                                 id="exampleInputEmail" aria-describedby="emailHelp"
@@ -110,6 +109,11 @@ if (isset($_POST['submit'])) {
                                             <input name="pass" type="password" class="form-control form-control-user"
                                                 id="exampleInputPassword" placeholder="Password">
                                         </div>
+                                         
+                                        <p class="text-center" style="color:red; ">
+                                            <?php echo $role ?? ''  ?>
+                                        </p>
+
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
                                                 <input type="checkbox" class="custom-control-input" id="customCheck">
@@ -122,19 +126,13 @@ if (isset($_POST['submit'])) {
                                         </button>
                                     </form>
                                     <hr>
-                                    <div class="container-fluid">
-                                        <?php if (isset($_SESSION['msg'])): ?>
-                                            <div class="<?= $_SESSION['alert']; ?>">
-                                            <?= $_SESSION['msg']; ?>
-                                            </div>
-                                            <?php endif; ?>
-                                    </div>
+                                   
                                     <hr>
                                     <div class="text-center">
                                         <a class="small" href="#">Forgot Password?</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.php">Create an Account!</a>
+                                        <a class="small" href="register.php">Create an Account</a>
                                     </div>
                                 </div>
                             </div>
